@@ -4,7 +4,7 @@ The **simplest "headless" Content Management System** to simplify your everyday 
 ## Installation
 Simply run:
 ```sh
-npm i -g simplestcms
+npm i -g @g-roll/simplestcms
 ```
 
 ## Usage
