@@ -12,10 +12,13 @@ program
   .usage('-s <path/to/source/directory> -t <path/to/target/directory> -d <path/to/file.json>')
 program.parse()
 
-const dataJSON = JSON.parse(readFileSync(program.opts().data))
-let date = new Date()
+const dataJSON = await JSON.parse(readFileSync(program.opts().data),'utf8')
+const templateList = []
+const partialList = []
 
+console.time('Done 🎉 Completed in')
 async function main(sourceDir, targetDir, _dataSrc) {
+  
   readdirSync(sourceDir).forEach(file => {
     let filePath = sourceDir+file
 
@@ -23,15 +26,32 @@ async function main(sourceDir, targetDir, _dataSrc) {
       main(filePath+'/', targetDir, _dataSrc)
     }
 
-    else if (/\.html$/.test(filePath)) {
-      let template = Handlebars.compile(readFileSync(sourceDir+file,'utf8').toString())
-      let fileContents = template(dataJSON)
-      let relPath = targetDir+filePath.split(program.opts().source+'/').pop()
+    else if (/^.*((\.html)|(\.xml)).*$/.test(filePath)) {
+      if (/^.*(\.partial).*$/.test(filePath)) {
+        partialList.push(filePath)
+      }
 
-      outputFile(relPath, fileContents)
-      console.log('🚀 simplestCMS: ´'+relPath+'´ generated. ['+date.toLocaleTimeString()+']')
+      else {
+        templateList.push(filePath)
+      }
     }
+  })
+
+  partialList.forEach(partial => {
+    let content = Handlebars.compile(readFileSync(partial,'utf8'))
+    let partialName = partial.split(program.opts().source+'/').pop()
+
+    Handlebars.registerPartial(partialName, content(dataJSON))
+  })
+
+  templateList.forEach(template => {
+    let content = Handlebars.compile(readFileSync(template,'utf8').toString())
+    let relPath = targetDir+template.split(program.opts().source+'/').pop()
+
+    outputFile(relPath, content(dataJSON))
+    console.log(relPath+' generated')
   })
 }
 
 await main(program.opts().source+'/', program.opts().target+'/', program.opts().data)
+console.timeEnd('Done 🎉 Completed in')

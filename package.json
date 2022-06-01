@@ -1,14 +1,22 @@
 {
   "name": "@g-roll/simplestcms",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "",
   "main": "index.js",
   "type": "module",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "keywords": [],
-  "author": "Gareth Roll [github.com/g-roll]",
+  "keywords": [
+    "cli",
+    "cms",
+    "handlebars",
+    "ssg",
+    "static site",
+    "static sites",
+    "static site generator"
+  ],
+  "author": "Gareth Roll <hello@garethroll.com> (https://garethroll.com)",
   "license": "MIT",
   "dependencies": {
     "commander": "^9.2.0",
@@ -17,5 +25,14 @@
   },
   "bin": {
     "simplestcms": "./index.js"
+  },
+  "homepage": "https://github.com/g-roll/simplestcms",
+  "bugs": {
+    "url": "https://github.com/g-roll/simplestcms/issues",
+    "email": "bugs@garethroll.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/g-roll/simplestcms"
   }
 }
