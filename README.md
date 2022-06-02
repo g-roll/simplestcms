@@ -8,7 +8,7 @@ The **simplest "headless" Content Management System** to simplify your everyday 
 
 Simply run:
 
-```sh
+```
 npm i -g @g-roll/simplestcms
 ```
 
@@ -16,11 +16,17 @@ npm i -g @g-roll/simplestcms
 
 Specify a source and destination directory of your HTML and XML, as well as a data source file in JSON format and generate a static site on the fly 🚀
 
-```sh
-simplestcms -s <path/to/source/dir> -t <path/to/target/dir> -d <path/to/file.json>
+```
+simplestcms -s <path/to/source/dir> -t <path/to/target/dir>
+
+Options:
+  -s, --source <path/to/source/dir>     input directory
+  -t, --target <path/to/target/dir>     output directory
+  -d, --data <path/to/file.json>        [optional] global data file
+  -h, --help                            display help for command
 ```
 
-### Handlebars expressions
+### Expressions
 
 Write your HTML as usual and add handlebars expressions for your dynamic content.
 
@@ -30,12 +36,13 @@ Write your HTML as usual and add handlebars expressions for your dynamic content
 <p class="{{foo}}">{{bar}}</p>
 ```
 
-Handlebars expressions correspond to **keys** and add the matching **value** you set in the JSON source file.
+Handlebars expressions correspond to **keys** and add the matching **value** you set in the JSON source files.
+
 
 ```json
 {
   "foo": "Hello",
-  "bar": "World",
+  "bar": "World"
 }
 ```
 
@@ -47,24 +54,53 @@ Turns into:
 
 For advanced functionality, like **loops** or **if functions**, please read the official [Handlebars docs](https://handlebarsjs.com/guide/expressions.html).
 
-### Handlebars partials
+### Data mapping
+
+To map a JSON file to an HTML or XML file, name the JSON file the same as the source file, including the file extension (for example, *index.html.json*), and place it in the same directory.
+
+Optionally, you can also specify a JSON file for global expressions with the `-d <path/to/file.json>` option.
+
+> **Note**: Local expressions **will override** global expressions, if they have the same key.
+
+#### Example
+
+In this example, an angle bracket indicates which JSON file is mapped to which HTML source file.
+
+```
+simplestcms -d source/dir/global.json ...
+
+source/dir
+├── foo.html < global.json
+├── global.json
+└── some_dir
+   ├── bar.html < global.json, some.html.json
+   └── bar.html.json
+```
+
+### Partials
 
 Handlebars refer to parts of templates as **partials**. To nest partials within templates and resolve them recursively with expressions (or other partials), simply add `.partial` before the file extension.
 
+> **Note**: Partials use the global and local expressions of the templates that call those.
+
 #### Example:
 
-```sh
-path/to/source/dir
-├── foo.partial.html
+```
+source/dir
+├── some.partial.html
 └── some_dir
-   └── bar.partial.html
+   └── some.partial.html
 ```
 
 These partials can be called as follows:
 
 ```html
-<p>{{foo.partial.html}}</p>
-<p>{{some_dir/bar.partial.html}}</p>
+<div>
+  {{some.partial.html}}
+</div>
+<div>
+  {{some_dir/some.partial.html}}
+</div>
 ```
 
 Again, for advanced functionality, like **dynamic** or **contextual** partials, please read the official [Handlebars docs](https://handlebarsjs.com/guide/partials.html).
@@ -75,8 +111,8 @@ Again, for advanced functionality, like **dynamic** or **contextual** partials, 
 
 To monitor file changes and automatically (re)generate your HTML, I recommend using [nodemon](https://www.npmjs.com/package/nodemon):
 
-```sh
-nodemon --exec 'simplestcms -s <path/to/source/dir> -t <path/to/target/dir> -d <path/to/file.json>' -w <path/to/source/dir/*.html>
+```
+nodemon --exec 'simplestcms -s <path/to/source/dir> -t <path/to/target/dir>' -w <path/to/source/dir/*.html>
 ```
 
 ## Dependencies
