@@ -3,6 +3,7 @@
 import {readFileSync, readdirSync, lstatSync, existsSync} from 'fs' // fs/promises were not used because promises would have led to a distorted result
 import {outputFile} from 'fs-extra'
 import {program} from 'commander'
+import {resolve} from 'path'
 import Handlebars from 'handlebars'
 
 console.time('[simplestCMS]: Done 🎉 Completed in')
@@ -56,7 +57,7 @@ async function main(source, target, _dataSrc) {
 
   if (existsSync(program.opts().functions)) {
     try {
-      let {default: customHelpers} = await import('./'+program.opts().functions);
+      let {default: customHelpers} = await import(resolve('./'+program.opts().functions))
 
       customHelpers(); 
     } catch (error) {
