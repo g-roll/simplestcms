@@ -23,6 +23,7 @@ Options:
   -s, --source <path/to/source/dir>     input directory
   -t, --target <path/to/target/dir>     output directory
   -d, --data <path/to/file.json>        [optional] global data file
+  -f, --functions <path/to/file.js>     [optional] custom handlebars helpers file
   -h, --help                            display help for command
 ```
 
@@ -106,6 +107,28 @@ These partials can be called as follows:
 Again, for advanced functionality, like **dynamic** or **contextual** partials, please read the official [Handlebars docs](https://handlebarsjs.com/guide/partials.html).
 
 > **Note**: All files in the source directory that contain the string `.partial` are registered automatically. Therefore, contrary to the documentation, there is no need to have them registered.
+
+### Custom helper functions
+
+If handlebars lacks some functions, you can add the desired function in a project-wide function file with the `-f <path/to/file>` option.
+
+#### Example
+
+To register handlebars helpers, bundle them in an [export default](https://developer.mozilla.org/en-US/docs/web/javascript/reference/statements/export#description) statement:
+
+```js
+import Handlebars from "handlebars"
+
+export default function() {
+  // Handlebars.registerHelper('someName', (some options/context) => {
+  //   your logic    
+  // })
+  //
+  // Handlebars.registerHelpe... etc
+}
+```
+
+> **Note**: If your code runs into an error, the program will ignore **ALL** helpers and continue to generate your static pages.
 
 ### Extra: Automatic HTML (re)generation
 
