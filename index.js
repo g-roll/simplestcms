@@ -1,15 +1,18 @@
 #!/usr/bin/env node
 
-import {readFileSync, readdirSync, lstatSync, existsSync} from 'fs'
+import {readFileSync, readdirSync, lstatSync, existsSync} from 'fs' // fs/promises were not used because promises would have led to a distorted result
 import {outputFile} from 'fs-extra'
 import {program} from 'commander'
 import Handlebars from 'handlebars'
+
+console.time('[simplestCMS]: Done 🎉 Completed in')
 
 program
   .option('-s, --source <path/to/source/dir>', 'input directory')
   .option('-t, --target <path/to/target/dir>', 'output directory')
   .option('-d, --data <path/to/file.json>', '[optional] global data file')
-  .description('Specify a source and destination directory of your HTML/XML code. Handlebars expressions are dynamically resolved using the JSON file of the corresponding filename (e.g. index.html.json), optionally with a declared global data JSON file.. More information at github.com/g-roll/simplestcms.')
+  .option('-f, --functions <path/to/file.js>', '[optional] custom handlebars helpers file')
+  .description('Specify a source and destination directory of your HTML/XML code. Handlebars expressions are dynamically resolved using the JSON file of the corresponding filename (e.g. index.html.json), optionally with a declared global data JSON file. More information at github.com/g-roll/simplestCMS.')
   .usage('-s <path/to/source/dir> -t <path/to/target/dir>')
 program.parse()
 
@@ -19,10 +22,6 @@ const partialList = []
 async function dataOption() {
   if (existsSync(program.opts().data)) {
       let result = await JSON.parse(readFileSync(program.opts().data), 'utf8')
-
-      return result
-  } else {
-      let result = null
 
       return result
   }
@@ -52,9 +51,18 @@ async function partialRegistration(dataSpread) {
   })
 }
 
-console.time('[simplestcms]: Done 🎉 Completed in')
 async function main(source, target, _dataSrc) {
   const dataGlobal = await dataOption()
+
+  if (existsSync(program.opts().functions)) {
+    try {
+      let {default: customHelpers} = await import('./'+program.opts().functions);
+
+      customHelpers(); 
+    } catch (error) {
+      console.log('[simplestCMS] Error: '+error)
+    }
+  }
 
   await fileLookup(source)
 
@@ -81,6 +89,6 @@ async function main(source, target, _dataSrc) {
   })
 }
 
-await main(program.opts().source + '/', program.opts().target + '/', program.opts().data)
-console.log('[simplestcms]: {' + templateList.map(e => ['\n'+e]) + '\n} generated.')
-console.timeEnd('[simplestcms]: Done 🎉 Completed in')
+await main(program.opts().source + '/', program.opts().target + '/', program.opts().data, program.opts().functions)
+console.log('[simplestCMS]: {' + templateList.map(e => ['\n'+e]) + '\n} generated.')
+console.timeEnd('[simplestCMS]: Done 🎉 Completed in')
