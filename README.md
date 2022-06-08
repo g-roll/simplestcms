@@ -74,7 +74,7 @@ source/dir
 ├── foo.html < global.json
 ├── global.json
 └── some_dir
-   ├── bar.html < global.json, some.html.json
+   ├── bar.html < global.json, bar.html.json
    └── bar.html.json
 ```
 
